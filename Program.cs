@@ -9,6 +9,7 @@ using System.Collections.Generic;
         {
             // Display a welcome message and instructions for using the program
             Console.WriteLine("Welcome to the Film and Actors Catalogue!");
+            Console.WriteLine("=========================================");
             Console.WriteLine("Use this program to manage your collection of films and actors.");
             Console.WriteLine("Choose an option from the menu below:");
 
@@ -34,7 +35,9 @@ using System.Collections.Generic;
             Console.WriteLine("1 - Add a new Film");
             Console.WriteLine("2 - Add a new Actor");
             Console.WriteLine("3 - Display all Films");
-            Console.WriteLine("4 - Exit");
+            Console.WriteLine("4 - Load films and Actors");
+            Console.WriteLine("5 - Save & Exit");
+            Console.WriteLine("=========================================");
         }
 
         // Gets the user's menu choice
@@ -62,9 +65,16 @@ using System.Collections.Generic;
                     DisplayAllFilms(films);
                     break;
                 case "4":
+                    LoadFilmsAndActors();
+                    break;
+                case "5":
                     // Call the function to exit the program
                     SaveDataExitProgram();
                     break;
+                //case "6":
+                    //SaveFilmsAndActors();
+                    //break;
+
                 default:
                     // Display an error message for invalid menu choices
                     Console.WriteLine("Invalid choice. Please try again.");
@@ -150,6 +160,26 @@ using System.Collections.Generic;
                     Console.WriteLine();
                 }
             }
+        }
+        static void LoadFilmsAndActors()
+        {
+            Console.WriteLine("What file would you like to load?");
+            string filename = Console.ReadLine();
+
+            if (File.Exists(filename)) 
+            {
+                List<string> lines = File.ReadAllLines(filename).ToList();
+                foreach (string line in lines)
+                {
+                     List<string> parts = line.Split().ToList();
+                     int fds = 324;
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Sorry, '{filename}' does not exist.");
+            }
+
         }
 
         // Exits the program
