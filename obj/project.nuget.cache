@@ -1,12 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Kl1hPDB9A8ARdFvcTnSjML0eLpfm9+zBk4cmd21jcI3NE3k4v2j67lTbKtkKPsTGQIL3vIg7vNxZc77ud0byIQ==",
+  "dgSpecHash": "TPFrTYnEuVmp+8LSF73YWsdl6fR/4FiX/aNq/DydhngHfzWlIm8zO+zn+F02siToIAaoDXgpwXdk8mB24oqvYw==",
   "success": true,
-  "projectFilePath": "/Users/husslaos/Documents/University/ProgrammingProjects/filmsandactors/filmsandactors/filmsandactors.csproj",
-  "expectedPackageFiles": [
-    "/Users/husslaos/.nuget/packages/microsoft.netcore.app.ref/6.0.28/microsoft.netcore.app.ref.6.0.28.nupkg.sha512",
-    "/Users/husslaos/.nuget/packages/microsoft.aspnetcore.app.ref/6.0.28/microsoft.aspnetcore.app.ref.6.0.28.nupkg.sha512",
-    "/Users/husslaos/.nuget/packages/microsoft.netcore.app.host.osx-arm64/6.0.28/microsoft.netcore.app.host.osx-arm64.6.0.28.nupkg.sha512"
-  ],
+  "projectFilePath": "/Users/haleemhussain/Projects/filmsandactors/filmsandactors/filmsandactors.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }
