@@ -65,7 +65,7 @@ using System.Collections.Generic;
                     DisplayAllFilms(films);
                     break;
                 case "4":
-                    LoadFilmsAndActors();
+                    LoadFilmsAndActors(films, actors);
                     break;
                 case "5":
                     // Call the function to exit the program
@@ -161,32 +161,111 @@ using System.Collections.Generic;
                 }
             }
         }
-        static void LoadFilmsAndActors()
+        // Loads films and actors from a file
+        static void LoadFilmsAndActors(List<Film> films, List<Actor> actors)
         {
-            Console.WriteLine("What file would you like to load?");
-            string filename = Console.ReadLine();
+               Console.WriteLine("What file would you like to load?");
+               string filename = Console.ReadLine();
 
-            if (File.Exists(filename)) 
+               // Check current directory for reference
+               //Console.WriteLine($"Current Directory: {Environment.CurrentDirectory}");
+
+              // Trim whitespace and verify the file exists
+              filename = filename.Trim();
+
+            if (File.Exists(filename))
             {
-                List<string> lines = File.ReadAllLines(filename).ToList();
-                foreach (string line in lines)
+              Console.WriteLine($"Loading data from '{filename}'...");
+              List<string> lines = File.ReadAllLines(filename).ToList();
+
+              bool isFilmSection = false;
+              bool isActorSection = false;
+
+            foreach (string line in lines)
+            {
+            if (line.Trim() == "Films:")
+            {
+                isFilmSection = true;
+                isActorSection = false;
+                Console.WriteLine("Found Films section");
+            }
+            else if (line.Trim() == "Actors:")
+            {
+                isFilmSection = false;
+                isActorSection = true;
+                Console.WriteLine("Found Actors section");
+            }
+            else if (!string.IsNullOrWhiteSpace(line))
+            {
+                if (isFilmSection)
                 {
-                     List<string> parts = line.Split().ToList();
-                     int fds = 324;
+                    try
+                    {
+                        // Split the line by comma to extract film details
+                        var parts = line.Split(",");
+                        if (parts.Length == 3)  // Adjusted based on the available fields
+                        {
+                            string title = parts[0].Trim();
+                            string genre = parts[1].Trim();
+                            int releaseYear = int.Parse(parts[2].Trim());
+
+                            // Create a new Film object and add it to the list
+                            Film newFilm = new Film(title, genre, releaseYear);
+                            films.Add(newFilm);
+                            Console.WriteLine($"Loaded Film: {title}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Incorrect film format: {line}");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error parsing film: {line}. Error: {e.Message}");
+                    }
+                }
+                else if (isActorSection)
+                {
+                    try
+                    {
+                        // Split the line by comma to extract actor details
+                        var parts = line.Split(",");
+                        if (parts.Length == 2)
+                        {
+                            string name = parts[0].Trim();
+                            int age = int.Parse(parts[1].Trim());
+
+                            // Create a new Actor object and add it to the list
+                            Actor newActor = new Actor(name, age);
+                            actors.Add(newActor);
+                            Console.WriteLine($"Loaded Actor: {name}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Incorrect actor format: {line}");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error parsing actor: {line}. Error: {e.Message}");
+                    }
                 }
             }
-            else
-            {
-                Console.WriteLine($"Sorry, '{filename}' does not exist.");
-            }
-
         }
+        Console.WriteLine("Data loaded successfully.");
+    }
+    else
+    {
+        Console.WriteLine($"Sorry, '{filename}' does not exist.");
+    }
+}
+
 
         // Exits the program
         static void SaveDataExitProgram()
         {
             // Display a goodbye message and exit the program
             Console.WriteLine("Your file has been saved, Goodbye!");
-            Environment.Exit(0);
+            Environment.Exit(0) ;
         }
     }
