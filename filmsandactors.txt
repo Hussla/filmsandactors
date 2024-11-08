@@ -1,6 +1,4 @@
 Films:
-Inception, Film, Action, 2010
-The Dark Knight, Film, Thriller, 2008
+Scareface, Action, 1990
 Actors:
-Denzel Washington, Actor, 65
-Leonardo DiCaprio, Actor, 46
+Al Pacino, 80
