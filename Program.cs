@@ -41,15 +41,42 @@ class Program
         Console.WriteLine("6 - Search Films or Actors");
         Console.WriteLine("7 - Update Film or Actor Information");
         Console.WriteLine("8 - Display Films by Actor");
-        Console.WriteLine("9 - Save & Exit");
+        Console.WriteLine("9 - Save Data");
+        Console.WriteLine("10 - Exit");
         Console.WriteLine("=========================================");
     }
 
     // Gets the user's menu choice
     static string GetUserChoice()
     {
-        Console.Write("Enter your choice: ");
-        return Console.ReadLine();
+        string choice;
+        while (true)
+        {
+            Console.Write("Enter your choice: ");
+            choice = Console.ReadLine();
+
+            // Validate user input
+            if 
+            (
+                choice == "1" || 
+                choice == "2" || 
+                choice == "3" || 
+                choice == "4" || 
+                choice == "5" || 
+                choice == "6" || 
+                choice == "7" || 
+                choice == "8" || 
+                choice == "9" || 
+                choice == "10"
+            )
+            {
+                return choice;
+            }
+            else
+            {
+                Console.WriteLine("Invalid choice. Please enter a number between 1 and 10.");
+            }
+        }
     }
 
     // Handles the user's menu choice
@@ -82,8 +109,10 @@ class Program
                 DisplayFilmsByActor(films, actors); // Call function to display films by actor
                 break;
             case "9":
-                SaveDataToFile(films, actors); // Save data before exiting
-                SaveDataExitProgram();
+                SaveDataToFile(films, actors); // Save data
+                break;
+            case "10":
+                ExitProgram(); // Exit the program
                 break;
             default:
                 Console.WriteLine("Invalid choice. Please try again."); // Handle invalid menu choices
@@ -309,50 +338,6 @@ class Program
         }
     }
 
-    // Saves films and actors to a file
-    static void SaveDataToFile(Dictionary<string, Film> films, Dictionary<string, Actor> actors)
-    {
-        Console.WriteLine("Enter the filename to save data to:");
-        string filename = Console.ReadLine();
-
-        try
-        {
-            List<string> lines = new List<string>();
-
-            // Write Films section
-            lines.Add("Films:");
-            foreach (Film film in films.Values)
-            {
-                lines.Add($"{film.GetTitle()}, {film.GetGenre()}, {film.GetReleaseYear()}");
-            }
-
-            // Write Actors section
-            lines.Add("Actors:");
-            foreach (Actor actor in actors.Values)
-            {
-                lines.Add($"{actor.GetName()}, {actor.GetAge()}");
-            }
-
-            // Write all lines to the specified file
-            File.WriteAllLines(filename, lines);
-
-            Console.WriteLine("Data saved successfully.");
-        }
-        catch (Exception e)
-        {
-            // Handle any unexpected errors that occur during the save process
-            Console.WriteLine("An error occurred while saving data: " + e.Message);
-        }
-    }
-
-    // Exits the program
-    static void SaveDataExitProgram()
-    {
-        // Display a goodbye message and exit the program
-        Console.WriteLine("Your file has been saved, Goodbye!");
-        Environment.Exit(0);
-    }
-
     // Search functionality to find films or actors using LINQ
     static void SearchFilmsOrActors(Dictionary<string, Film> films, Dictionary<string, Actor> actors)
     {
@@ -481,9 +466,51 @@ class Program
             Console.WriteLine($"Actor '{actorName}' not found.");
         }
     }
+
+    // Saves films and actors to a file
+    static void SaveDataToFile(Dictionary<string, Film> films, Dictionary<string, Actor> actors)
+    {
+        Console.WriteLine("Enter the filename to save data to:");
+        string filename = Console.ReadLine();
+
+        try
+        {
+            List<string> lines = new List<string>();
+
+            // Write Films section
+            lines.Add("Films:");
+            foreach (Film film in films.Values)
+            {
+                lines.Add($"{film.GetTitle()}, {film.GetGenre()}, {film.GetReleaseYear()}");
+            }
+
+            // Write Actors section
+            lines.Add("Actors:");
+            foreach (Actor actor in actors.Values)
+            {
+                lines.Add($"{actor.GetName()}, {actor.GetAge()}");
+            }
+
+            // Write all lines to the specified file
+            File.WriteAllLines(filename, lines);
+
+            Console.WriteLine("Data saved successfully.");
+        }
+        catch (Exception e)
+        {
+            // Handle any unexpected errors that occur during the save process
+            Console.WriteLine("An error occurred while saving data: " + e.Message);
+        }
+    }
+
+    // Exits the program
+    static void ExitProgram()
+    {
+        // Display a goodbye message and exit the program
+        Console.WriteLine("Goodbye!");
+        Environment.Exit(0);
+    }
 }
-
-
 
 
 // Explanation of Topics Included So Far
