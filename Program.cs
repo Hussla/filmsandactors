@@ -2,12 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.AccessControl;
-
+using System.Diagnostics;
 // Main Program Class
 class Program
 {
     static void Main(string[] args)
     {
+        Console.WriteLine("Running tests for Actor class...");
+        Actor.RunTests(); // Run tests for Actor class
+
+        Console.WriteLine("Running tests for Film class...");
+        Film.RunTests(); // Run tests for Film class
+
+        Console.WriteLine("All tests have been executed.");
+
         // Display a welcome message and instructions for using the program
         Console.WriteLine("Welcome to the Film and Actors Catalogue!");
         Console.WriteLine("=========================================");
@@ -27,6 +35,8 @@ class Program
             string choice = GetUserChoice();
             // Handle the user's menu choice
             HandleUserChoice(choice, films, actors);
+
+            RunTests();
         }
     }
 
@@ -42,7 +52,11 @@ class Program
         Console.WriteLine("7 - Update Film or Actor Information");
         Console.WriteLine("8 - Display Films by Actor");
         Console.WriteLine("9 - Save Data");
-        Console.WriteLine("10 - Exit");
+        Console.WriteLine("10 - Remove Film or Actor");
+        Console.WriteLine("11 - Rate a Film");
+        Console.WriteLine("12 - Sort Films or Actors");
+        Console.WriteLine("13 - Export Report");
+        Console.WriteLine("14 - Exit");
         Console.WriteLine("=========================================");
     }
 
@@ -67,14 +81,18 @@ class Program
                 choice == "7" || 
                 choice == "8" || 
                 choice == "9" || 
-                choice == "10"
+                choice == "10" ||
+                choice == "11" ||
+                choice == "12" ||
+                choice == "13" ||
+                choice == "14" 
             )
             {
                 return choice;
             }
             else
             {
-                Console.WriteLine("Invalid choice. Please enter a number between 1 and 10.");
+                Console.WriteLine("Invalid choice. Please enter a number between 1 and 14.");
             }
         }
     }
@@ -85,7 +103,7 @@ class Program
         switch (choice)
         {
             case "1":
-                AddNewFilm(films); // Call function to add a new film
+                AddNewFilm(films, actors); // Call function to add a new film
                 break;
             case "2":
                 AddNewActor(actors); // Call function to add a new actor
@@ -112,6 +130,18 @@ class Program
                 SaveDataToFile(films, actors); // Save data
                 break;
             case "10":
+                RemoveFilmOrActor(films, actors); // Remove film or actor
+                break;
+            case "11":
+                RateFilm(films); // Rate a film
+                break;
+            case "12":
+                SortFilmsOrActors(films, actors); // Sort films or actors
+                break;
+            case "13":
+                ExportReport(films, actors); // Export report
+                break;
+            case "14":
                 ExitProgram(); // Exit the program
                 break;
             default:
@@ -121,7 +151,7 @@ class Program
     }
 
     // Adds a new film to the catalogue
-    static void AddNewFilm(Dictionary<string, Film> films)
+    static void AddNewFilm(Dictionary<string, Film> films, Dictionary<string, Actor> actors)
     {
         try
         {
@@ -147,6 +177,45 @@ class Program
 
             // Create a new Film object and add it to the films dictionary
             Film newFilm = new Film(filmTitle, genre, releaseYear);
+
+            // Optionally add actors to the film
+            Console.Write("Do you want to add actors to this film? (yes/no): ");
+            string addActorsResponse = Console.ReadLine().ToLower();
+            while (addActorsResponse == "yes")
+            {
+                Console.Write("Enter the actor's name: ");
+                string actorName = Console.ReadLine();
+
+                if (actors.ContainsKey(actorName))
+                {
+                    newFilm.AddActor(actors[actorName]);
+                    Console.WriteLine($"Actor '{actorName}' added to film '{filmTitle}'.");
+                }
+                else
+                {
+                    Console.WriteLine($"Actor '{actorName}' not found. Do you want to add this actor to this film? (yes/no): ");
+                    string addActorResponse = Console.ReadLine().ToLower();
+                    if (addActorResponse == "yes")
+                    {
+                        Console.Write("Enter the actor's age: ");
+                        if (int.TryParse(Console.ReadLine(), out int actorAge))
+                        {
+                            Actor newActor = new Actor(actorName, actorAge);
+                            actors[actorName] = newActor;
+                            newFilm.AddActor(newActor);
+                            Console.WriteLine($"Actor '{actorName}' added to the catalogue and to film '{filmTitle}'.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input. Age must be a number.");
+                        }
+                    }
+                }
+
+                Console.Write("Do you want to add another actor to this film? (yes/no): ");
+                addActorsResponse = Console.ReadLine().ToLower();
+            }
+
             films[filmTitle] = newFilm;
             Console.WriteLine("Film added successfully!");
         }
@@ -188,6 +257,7 @@ class Program
             Console.WriteLine("An error occurred: " + e.Message); // Handle unexpected errors
         }
     }
+    
 
     // Displays information for all films in the catalogue
     static void DisplayAllFilms(Dictionary<string, Film> films)
@@ -503,6 +573,144 @@ class Program
         }
     }
 
+    // Removes a film or actor from the catalogue
+    static void RemoveFilmOrActor(Dictionary<string, Film> films, Dictionary<string, Actor> actors)
+    {
+        Console.Write("Do you want to remove a Film or an Actor? (Enter 'Film' or 'Actor'): ");
+        string choice = Console.ReadLine().ToLower();
+
+        if (choice == "film")
+        {
+            Console.Write("Enter the title of the film to remove: ");
+            string filmTitle = Console.ReadLine();
+
+            if (films.ContainsKey(filmTitle))
+            {
+                films.Remove(filmTitle);
+                Console.WriteLine("Film removed successfully!");
+            }
+            else
+            {
+                Console.WriteLine("Film not found.");
+            }
+        }
+        else if (choice == "actor")
+        {
+            Console.Write("Enter the name of the actor to remove: ");
+            string actorName = Console.ReadLine();
+
+            if (actors.ContainsKey(actorName))
+            {
+                actors.Remove(actorName);
+                Console.WriteLine("Actor removed successfully!");
+            }
+            else
+            {
+                Console.WriteLine("Actor not found.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Invalid choice. Please enter either 'Film' or 'Actor'.");
+        }
+    }
+
+    // Rates a film
+    static void RateFilm(Dictionary<string, Film> films)
+    {
+        Console.Write("Enter the title of the film to rate: ");
+        string filmTitle = Console.ReadLine();
+
+        if (films.ContainsKey(filmTitle))
+        {
+            Console.Write("Enter your rating (1-5): ");
+            if (int.TryParse(Console.ReadLine(), out int rating) && rating >= 1 && rating <= 5)
+            {
+                films[filmTitle].AddRating(rating);
+                Console.WriteLine("Rating added successfully!");
+            }
+            else
+            {
+                Console.WriteLine("Invalid rating. Please enter a number between 1 and 5.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Film not found.");
+        }
+    }
+
+    // Sorts films or actors
+    static void SortFilmsOrActors(Dictionary<string, Film> films, Dictionary<string, Actor> actors)
+    {
+        Console.Write("Do you want to sort Films or Actors? (Enter 'Film' or 'Actor'): ");
+        string choice = Console.ReadLine().ToLower();
+
+        if (choice == "film")
+        {
+            var sortedFilms = films.Values.OrderBy(f => f.GetTitle()).ToList();
+            Console.WriteLine("Films sorted alphabetically:");
+            foreach (var film in sortedFilms)
+            {
+                film.DisplayInfo();
+                Console.WriteLine();
+            }
+        }
+        else if (choice == "actor")
+        {
+            var sortedActors = actors.Values.OrderBy(a => a.GetName()).ToList();
+            Console.WriteLine("Actors sorted alphabetically:");
+            foreach (var actor in sortedActors)
+            {
+                actor.DisplayInfo();
+                Console.WriteLine();
+            }
+        }
+        else
+        {
+            Console.WriteLine("Invalid choice. Please enter either 'Film' or 'Actor'.");
+        }
+    }
+
+    // Exports the film and actor catalogue to a text file
+    static void ExportReport(Dictionary<string, Film> films, Dictionary<string, Actor> actors)
+    {
+        Console.Write("Enter the filename to export the report to: ");
+        string filename = Console.ReadLine();
+
+        try
+        {
+            List<string> reportLines = new List<string>
+            {
+                "Film and Actor Catalogue Report",
+                "========================================="
+            };
+
+            // Add film details to the report
+            reportLines.Add("\nFilms:");
+            foreach (var film in films.Values)
+            {
+                reportLines.Add($"Title: {film.GetTitle()}, Genre: {film.GetGenre()}, Release Year: {film.GetReleaseYear()}, Average Rating: {film.GetAverageRating()}");
+            }
+
+            // Add actor details to the report
+            reportLines.Add("Actors:");
+            foreach (var actor in actors.Values)
+            {
+                reportLines.Add($"Name: {actor.GetName()}, Age: {actor.GetAge()}");
+            }
+
+            // Write report to the specified file
+            File.WriteAllLines(filename, reportLines);
+
+            Console.WriteLine("Report exported successfully.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("An error occurred while exporting the report: " + e.Message);
+        }
+    }
+
     // Exits the program
     static void ExitProgram()
     {
@@ -510,7 +718,33 @@ class Program
         Console.WriteLine("Goodbye!");
         Environment.Exit(0);
     }
+
+     // Unit Tests for Film and Actor Classes
+    static void RunTests()
+    {
+        Console.WriteLine("Running Unit Tests...");
+
+        // Test Film Class
+        Film testFilm = new Film("Test Film", "Test Genre", 2000);
+        Debug.Assert(testFilm.GetTitle() == "Test Film");
+        Debug.Assert(testFilm.GetGenre() == "Test Genre");
+        Debug.Assert(testFilm.GetReleaseYear() == 2000);
+        testFilm.AddRating(5);
+        testFilm.AddRating(4);
+        Debug.Assert(testFilm.GetAverageRating() == 4.5);
+
+        // Test Actor Class
+        Actor testActor = new Actor("Test Actor", 30);
+        Debug.Assert(testActor.GetName() == "Test Actor");
+        Debug.Assert(testActor.GetAge() == 30);
+        testActor.AddFilm("Test Film");
+        Debug.Assert(testActor.GetFilms().Contains("Test Film"));
+
+        Console.WriteLine("Unit Tests Completed.");
+    }
 }
+
+
 
 
 // Explanation of Topics Included So Far
@@ -532,23 +766,35 @@ class Program
         - Alternatives include having all the logic in the main method, which would make the program much less readable.
         - Improvement: Functions could return more descriptive results to make error handling more consistent and detailed.
 
-    4. Collections and foreach Loop:
+    4. For and While Loops:
+        - The program uses loops to handle repetitive tasks such as displaying the menu and getting user choices until the user decides to exit.
+        - A `while (true)` loop is used to keep the program running, providing continuous interaction with the user until they choose to quit.
+        - The `foreach` loop is also used to iterate over collections, which simplifies the code and makes it more readable when dealing with lists or dictionaries.
+        - Alternatives: A `for` loop could be used instead of `foreach`, but `foreach` is generally more readable for collection iteration.
+
+    5. Collections and foreach Loop:
         - The program makes use of `Dictionary<string, Film>` and `Dictionary<string, Actor>` to store collections of films and actors
           instead of lists for storing films and actors, which will improve lookup performance and ensure unique entries for each film and actor.
         - The `foreach` loop is used to iterate over these dictionaries when displaying or saving data, which enhances readability and simplicity when accessing all elements.
         - An alternative would be using arrays, but dictionaries are more suitable for fast lookups and managing unique keys for each film and actor.
         - Improvement: Consider using LINQ for more advanced data querying and manipulation.
 
-    5. Class Member Functions:
+    6. Class Member Functions & Testing:
         - The `Film` and `Actor` classes have member functions such as `GetTitle`, `GetName`, and `AddActor` to encapsulate their behavior.
         - These member functions allow access to private data members and perform operations related to each class, ensuring data encapsulation.
         - Direct access to variables could be used, but using member functions provides better control over how data is accessed and modified.
         - Improvement: Properties with getters and setters could be used for more fine-grained control over data access.
 
-    6. File IO:
+        - Unit Testing: The program includes simple unit tests using `Debug.Assert` to verify the functionality of key methods in both the `Actor` and `Film` classes.
+          This helps ensure that individual components of the program work as expected, making debugging easier.
+          The tests check functions like `GetName`, `SetName`, `AddFilm`, etc., and report errors if the expected outcomes are not met.
+          Unit tests provide a safeguard against future changes that might break existing functionality.
+        
+    7. File IO:
         - The program allows loading and saving of films and actors data using text files.
         - Functions like `LoadFilmsAndActors` and `SaveDataToFile` are responsible for reading and writing data to files, making the data persistent across program runs.
         - Alternatives include using a database or JSON/XML for structured data storage, which would offer more flexibility and scalability.
         - Improvement: Implementing error recovery to handle partial data loads or invalid file formats more gracefully.
 */
+
 

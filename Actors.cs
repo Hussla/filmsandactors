@@ -1,4 +1,6 @@
-/// Class representing an Actor
+using System.Diagnostics;
+
+// Class representing an Actor
 public class Actor
 {
     // Member Variables
@@ -14,6 +16,7 @@ public class Actor
         this.age = age;
         this.films = new List<string>();
     }
+    
 
     // Member Functions
     // Returns the name of the actor
@@ -62,6 +65,32 @@ public class Actor
         {
             Console.WriteLine("- " + film);
         }
+    }
+
+    // Unit Tests
+    public static void RunTests()
+    {
+        Film testFilm = new Film("Test Film", "Action", 2021);
+
+        // Test GetTitle
+        Debug.Assert(testFilm.GetTitle() == "Test Film", "Error: GetTitle failed.");
+
+        // Test GetGenre
+        Debug.Assert(testFilm.GetGenre() == "Action", "Error: GetGenre failed.");
+
+        // Test GetReleaseYear
+        Debug.Assert(testFilm.GetReleaseYear() == 2021, "Error: GetReleaseYear failed.");
+
+        // Test AddRating and GetAverageRating
+        testFilm.AddRating(4);
+        testFilm.AddRating(5);
+        Debug.Assert(testFilm.GetAverageRating() == 4.5, "Error: GetAverageRating failed.");
+
+        // Test AddActor
+        Actor testActor = new Actor("Test Actor", 35);
+        testFilm.AddActor(testActor);
+        Debug.Assert(testFilm.GetActors().Count == 1, "Error: AddActor failed.");
+        Debug.Assert(testFilm.GetActors()[0] == testActor, "Error: GetActors failed.");
     }
 }
 
